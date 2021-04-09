@@ -134,6 +134,15 @@ Event的算子以此不断调整自己管理的EventTime clock。 Apache Flink �
 在实际的生产中Punctuated方式在TPS很高的场景下会产生大量的Watermark在一定程度上对下游算子造成压力，所以只有在实时性要求非常高的场景才会选择Punctuated的方式进行Watermark的生成。
 - Periodic - 周期性的（一定时间间隔或者达到一定的记录条数）产生一个Watermark。在实际的生产中Periodic的方式必须结合时间和积累条数两个维度继续周期性产生Watermark，否则在极端情况下会有很大的延时。
 
+==== 水印代码使用示例
+DataStream<Event> stream = ...
+
+WatermarkStrategy<Event> strategy = WatermarkStrategy
+        .<Event>forBoundedOutOfOrderness(Duration.ofSeconds(20))
+        .withTimestampAssigner((event, timestamp) -> event.timestamp);
+
+DataStream<Event> withTimestampsAndWatermarks =
+    stream.assignTimestampsAndWatermarks(strategy);
 
 
 ################ Broadcast广播变量 ################
