@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.myorg.quickstart.dto.SensorReading;
 
 /**
  * @ClassName ProcessWindowDemo
@@ -21,13 +22,13 @@ public class ProcessWindowDemo {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         DataStream<SensorReading> input = env.fromElements(
-                new SensorReading("a1", 10, 1000L),
-                new SensorReading("a2", 11, 1100L),
-                new SensorReading("a3", 13, 1300L),
-                new SensorReading("a4", 14, 1400L));
+                new SensorReading("sensor_1", 1547718199L, 35.8),
+                new SensorReading("sensor_6", 1547718201L, 15.4),
+                new SensorReading("sensor_7", 1547718202L, 6.7),
+                new SensorReading("sensor_10", 1547718205L, 38.1));
 
         input
-                .keyBy(x -> x.key)
+                .keyBy(x -> x.getId())
                 .window(TumblingEventTimeWindows.of(Time.minutes(1)))
                 .process(new MyWastefulMax())
                 .print();
@@ -37,7 +38,7 @@ public class ProcessWindowDemo {
 
     public static class MyWastefulMax extends ProcessWindowFunction<
                 SensorReading,                  // 输入类型
-                Tuple3<String, Long, Integer>,  // 输出类型
+                Tuple3<String, Long, Double>,  // 输出类型
                 String,                         // 键类型
                 TimeWindow> {                   // 窗口类型
 
@@ -46,11 +47,11 @@ public class ProcessWindowDemo {
                 String key,
                 Context context,
                 Iterable<SensorReading> events,
-                Collector<Tuple3<String, Long, Integer>> out) {
+                Collector<Tuple3<String, Long, Double>> out) {
 
-            int max = 0;
+            double max = 0;
             for (SensorReading event : events) {
-                max = Math.max(event.value, max);
+                max = Math.max(event.getTemperature(), max);
             }
             out.collect(Tuple3.of(key, context.window().getEnd(), max));
         }
