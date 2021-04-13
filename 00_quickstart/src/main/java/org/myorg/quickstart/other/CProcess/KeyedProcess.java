@@ -12,7 +12,7 @@ import org.myorg.quickstart.dto.SensorReading;
 
 /**
  * @ClassName KeyedProcess
- * @Description //需求：监控温度传感器的温度值，如果温度值在 10 秒钟之内连续上升，则报警。
+ * @Description //实现：监控温度传感器的温度值，如果温度值在 10 秒钟之内连续上升，则报警。
  * @Author ccy
  * @Date 2021/4/13 16:10
  * @Version 1.0
