@@ -3,10 +3,10 @@ package org.myorg.quickstart.other.CProcess;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.ProcessFunction;
-import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.myorg.quickstart.dto.SensorReading;
+import org.myorg.quickstart.util.MapUtil;
+import org.myorg.quickstart.udf.process.SideOutByTemp;
 
 /**
  * @ClassName SideOutProcess
@@ -26,7 +26,7 @@ public class SideOutProcess {
         DataStream<String> source = env.socketTextStream("10.0.81.88", 33335);
 
         //转换数据类型
-        DataStream<SensorReading> stream = source.map(SideOutProcess::map);
+        DataStream<SensorReading> stream = source.map(MapUtil::map);
 
         //定义侧输出流 用来输出低温<30
         /**
@@ -43,7 +43,7 @@ public class SideOutProcess {
         OutputTag<SensorReading> lowTemp = new OutputTag<>("lowTemp"){};
 
         //###分流处理
-        SingleOutputStreamOperator<SensorReading> highTemp = stream.process(new MyProcess(lowTemp));
+        SingleOutputStreamOperator<SensorReading> highTemp = stream.process(new SideOutByTemp(lowTemp));
 
         //输出
         highTemp.print("high-temp");
@@ -52,33 +52,5 @@ public class SideOutProcess {
         env.execute();
         //low-temp> SensorReading{id='sensor_7', timestamp=1547718202, temperature=6.7}
         // high-temp> SensorReading{id='sensor_2', timestamp=1547718207, temperature=36.3}
-    }
-
-    //自定义处理类 分流30上下的数据
-    private static class MyProcess extends ProcessFunction<SensorReading, SensorReading>{
-
-        private OutputTag<SensorReading> low;
-
-        public MyProcess(OutputTag<SensorReading> lowTemp){
-            low = lowTemp;
-        }
-
-        @Override
-        public void processElement(SensorReading sr, Context ctx, Collector<SensorReading> out) throws Exception {
-            if(sr.getTemperature() > 30){
-                out.collect(sr);
-            }else{
-                ctx.output(low, sr);
-            }
-        }
-    }
-
-    private static SensorReading map(String line) {
-        // System.out.println(line);
-        String[] fields = line.split(",");
-        // System.out.println(fields[0] + "-" + fields[1] + "-" + fields[2]);
-        SensorReading sr = new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
-        // System.out.println(sr);
-        return sr;
     }
 }
