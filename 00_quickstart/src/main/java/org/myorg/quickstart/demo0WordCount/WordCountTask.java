@@ -1,6 +1,5 @@
 package org.myorg.quickstart.demo0WordCount;
 
-import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
@@ -9,7 +8,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.util.Collector;
+import org.myorg.quickstart.udf.flatMap.SplitString;
 
 /**
  * @ClassName WordCountTask
@@ -20,7 +19,7 @@ import org.apache.flink.util.Collector;
  **/
 public class WordCountTask {
     public static void main(String[] args) throws Exception {
-        // getFile();//从文件读取
+        getFile();//从文件读取
         // getSocket(args);//从socket流读取
         return;
     }
@@ -35,7 +34,7 @@ public class WordCountTask {
         int port = tool.getInt("port");
 
         DataStreamSource<String> source = env.socketTextStream(host, port);
-        SingleOutputStreamOperator<Tuple2<String, Integer>> out = source.flatMap(new MyFlapMap())
+        SingleOutputStreamOperator<Tuple2<String, Integer>> out = source.flatMap(new SplitString(" "))
                 .keyBy(0)
                 .sum(1);
         out.print();
@@ -57,7 +56,7 @@ public class WordCountTask {
         String file = "src\\main\\resources\\hello.txt";
         DataSource<String> source = env.readTextFile(file);
 
-        DataSet<Tuple2<String, Integer>> resultSet = source.flatMap(new MyFlapMap())
+        DataSet<Tuple2<String, Integer>> resultSet = source.flatMap(new SplitString(" "))
                 .groupBy(0)
                 .sum(1);
 
@@ -84,16 +83,5 @@ public class WordCountTask {
         // (have,1)
         // (hello,4)
         // (to,2)
-    }
-
-    public static class MyFlapMap implements FlatMapFunction<String, Tuple2<String, Integer>>{
-
-        @Override
-        public void flatMap(String value, Collector<Tuple2<String, Integer>> out) throws Exception {
-            String[] words = value.split(" ");
-            for (String word : words) {
-                out.collect(new Tuple2<>(word, 1));
-            }
-        }
     }
 }

@@ -4,18 +4,22 @@
 ## 来源
 
 ## 转换
-- map：转换、一对一
-- flatMap：打散、拆分、单条输出多条
-- filter：过滤筛选
+- map：转换、一对一(可以转换数据类型)
+- flatMap：打散、拆分、单条输出多条(可以转换数据类型)
+- filter：过滤筛选(不能改变数据的类型)
 
 
 
+## 分流操作（使用OutputTag）
+Side outputs are more flexible and more efficient than split/select.
 
 
 
+#### 富函数”是 DataStream API 提供的一个函数类的接口，所有 Flink 函数类都有其 Rich 版本。
+它与常规函数的不同在于，可以获取运行环境的上下文，并拥有一些生命周期方法，所以可以实现更复杂的功能。
+getRuntimeContext()方法提供了函数的 RuntimeContext 的一些信息，例如函数执行的并行度，任务的名字，以及state状态
 
-
-
-
+open() 初始化工作，一般是定义状态，或者建立数据库连接
+close() 清理工作,关闭连接或清空状态的收尾操作
 
 

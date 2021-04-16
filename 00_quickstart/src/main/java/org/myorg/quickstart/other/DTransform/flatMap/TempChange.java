@@ -1,4 +1,4 @@
-package org.myorg.quickstart.other.DFlatMap;
+package org.myorg.quickstart.other.DTransform.flatMap;
 
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;

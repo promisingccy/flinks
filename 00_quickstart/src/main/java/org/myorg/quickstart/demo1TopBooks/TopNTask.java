@@ -23,7 +23,7 @@ import java.util.TreeMap;
 
 /**
  * @ClassName TopNTask
- * @Description //TODO
+ * @Description //每隔5秒钟 计算过去1小时 的 Top 3 商品
  * @Author ccy
  * @Date 2021/3/18 17:01
  * @Version 1.0

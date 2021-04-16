@@ -34,13 +34,12 @@ public class KeyedProcess {
         stream.keyBy("id")
             .process(new ContinueUpTemp(10))// 实现自定义的处理函数
             .print();
-        // 传感器 sensor_7 温度值连续 10 秒上升
 
         //sensor_7,1547718202,6
         // sensor_7,1547718202,61
         // sensor_7,1547718202,62
         // sensor_7,1547718202,63  // 传感器 sensor_7 温度值连续 10 秒上升
-        // sensor_7,1547718202,6
+        // sensor_7,1547718202,6   // 温度下降，删除定时器
         // sensor_7,1547718202,61
         // sensor_7,1547718202,62
         // sensor_7,1547718202,63  // 传感器 sensor_7 温度值连续 10 秒上升

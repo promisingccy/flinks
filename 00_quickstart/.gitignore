@@ -5,7 +5,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-.catalina
+/*.log
 src/main/resources/certs/*
 
 ### STS ###
